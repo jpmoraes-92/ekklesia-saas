@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="container" style="max-width: 600px;">
+    <h2 class="mb-4 text-center">
+        {% if membro %}✏️ Editar Membro{% else %}👤 Cadastro de Membro{% endif %}
+    </h2>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <form action="{{ url_for('membros.editar', id=membro.id) if membro else url_for('membros.novo') }}" 
+                  method="POST" enctype="multipart/form-data" id="form-declaracao">
+                
+                <div class="mb-3">
+                    <label for="nome" class="form-label fw-bold">Nome Completo</label>
+                    <input type="text" class="form-control" id="nome" name="nome" 
+                           value="{{ membro.nome if membro else '' }}" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="sexo" class="form-label fw-bold">Sexo</label>
+                        <select class="form-select" id="sexo" name="sexo_logica" required onchange="atualizarEstadoCivil()">
+                            <option value="M" {% if membro and membro.sexo == 'M' %}selected{% endif %}>Masculino</option>
+                            <option value="F" {% if membro and membro.sexo == 'F' %}selected{% endif %}>Feminino</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="estado_civil" class="form-label fw-bold">Estado Civil</label>
+                        <select class="form-select" id="estado_civil" name="estado_civil" required 
+                                data-selected="{{ membro.estado_civil if membro else '' }}">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="rg" class="form-label fw-bold">RG</label>
+                        <input type="text" class="form-control" id="rg" name="rg" 
+                               value="{{ membro.rg if membro else '' }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="cpf" class="form-label fw-bold">CPF</label>
+                        <input type="text" class="form-control" id="cpf" name="cpf" maxlength="14" 
+                               value="{{ membro.cpf if membro else '' }}"
+                               oninput="mascaraCPF(this)" onblur="validarInputCPF(this)" required>
+                        <div class="invalid-feedback" id="cpf-error">CPF Inválido</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="data_nascimento" class="form-label fw-bold">Data Nascimento</label>
+                        <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" 
+                               value="{{ membro.data_nascimento.strftime('%Y-%m-%d') if membro and membro.data_nascimento else '' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="cargo" class="form-label fw-bold">Cargo Eclesiástico</label>
+                        <select class="form-select" id="cargo" name="cargo">
+                            <option value="Membro" {% if membro and membro.cargo == 'Membro' %}selected{% endif %}>Membro</option>
+                            <option value="Diácono" {% if membro and membro.cargo == 'Diácono' %}selected{% endif %}>Diácono</option>
+                            <option value="Presbítero" {% if membro and membro.cargo == 'Presbítero' %}selected{% endif %}>Presbítero</option>
+                            <option value="Evangelista" {% if membro and membro.cargo == 'Evangelista' %}selected{% endif %}>Evangelista</option>
+                            <option value="Pastor" {% if membro and membro.cargo == 'Pastor' %}selected{% endif %}>Pastor</option>
+                            <option value="Missionário" {% if membro and membro.cargo == 'Missionário' %}selected{% endif %}>Missionário</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="endereco" class="form-label fw-bold">Endereço Completo</label>
+                    <input type="text" class="form-control" id="endereco" name="endereco" 
+                           value="{{ membro.endereco if membro else '' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="foto" class="form-label fw-bold">Foto (Deixe vazio para manter a atual)</label>
+                    <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+                </div>
+
+                {% if membro %}
+                <div class="mb-4 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="ativo" name="ativo" {% if membro.ativo %}checked{% endif %}>
+                    <label class="form-check-label" for="ativo">Membro Ativo na Comunhão</label>
+                </div>
+                {% endif %}
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary" id="btn-submit">
+                        {% if membro %}💾 Atualizar Dados{% else %}💾 Cadastrar{% endif %}
+                    </button>
+                    <a href="{{ url_for('membros.lista') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function atualizarEstadoCivil() {
+        const sexo = document.getElementById('sexo').value;
+        const selectEC = document.getElementById('estado_civil');
+        const valorSalvo = selectEC.getAttribute('data-selected');
+        
+        const opcoes = {
+            'M': [{valor: 'Solteiro', texto: 'Solteiro'}, {valor: 'Casado', texto: 'Casado'}, {valor: 'Viúvo', texto: 'Viúvo'}, {valor: 'Divorciado', texto: 'Divorciado'}],
+            'F': [{valor: 'Solteira', texto: 'Solteira'}, {valor: 'Casada', texto: 'Casada'}, {valor: 'Viúva', texto: 'Viúva'}, {valor: 'Divorciada', texto: 'Divorciada'}]
+        };
+
+        const valorAtual = selectEC.value || valorSalvo;
+        selectEC.innerHTML = '';
+
+        opcoes[sexo].forEach(opcao => {
+            const opt = document.createElement('option');
+            opt.value = opcao.valor;
+            opt.textContent = opcao.texto;
+            selectEC.appendChild(opt);
+        });
+
+        if (valorAtual) {
+            const index = opcoes[sexo].findIndex(o => o.valor === valorAtual);
+            if (index !== -1) selectEC.selectedIndex = index;
+            else selectEC.value = (sexo === 'M') ? 'Casado' : 'Casada';
+        } else {
+            selectEC.value = (sexo === 'M') ? 'Casado' : 'Casada';
+        }
+    }
+
+    function mascaraCPF(i) {
+        let v = i.value;
+        if(isNaN(v[v.length-1])){ i.value = v.substring(0, v.length-1); return; }
+        i.setAttribute("maxlength", "14");
+        v = v.replace(/\D/g, ""); 
+        v = v.replace(/(\d{3})(\d)/, "$1.$2"); 
+        v = v.replace(/(\d{3})(\d)/, "$1.$2"); 
+        v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2"); 
+        i.value = v;
+    }
+
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/[^\d]+/g,'');
+        if(cpf == '') return false;
+        if (cpf.length != 11 || /^(\d)\1+$/.test(cpf)) return false;
+        let add = 0;
+        for (let i=0; i < 9; i ++) add += parseInt(cpf.charAt(i)) * (10 - i);
+        let rev = 11 - (add % 11);
+        if (rev == 10 || rev == 11) rev = 0;
+        if (rev != parseInt(cpf.charAt(9))) return false;
+        add = 0;
+        for (let i = 0; i < 10; i ++) add += parseInt(cpf.charAt(i)) * (11 - i);
+        rev = 11 - (add % 11);
+        if (rev == 10 || rev == 11) rev = 0;
+        if (rev != parseInt(cpf.charAt(10))) return false;
+        return true;
+    }
+
+    function validarInputCPF(input) {
+        const erroDiv = document.getElementById('cpf-error');
+        const btn = document.getElementById('btn-submit');
+        if (!validarCPF(input.value)) {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+            erroDiv.style.display = 'block';
+            btn.disabled = true;
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            erroDiv.style.display = 'none';
+            btn.disabled = false;
+        }
+    }
+    
+    window.onload = function() {
+        atualizarEstadoCivil();
+    }
+</script>
+{% endblock %}

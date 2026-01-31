@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Membros Ativos</h2>
+    <a href="{{ url_for('membros.novo') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus-fill"></i> Novo Membro
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Nome</th>
+                        <th>Cargo</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membro in membros %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark">{{ membro.nome }}</td>
+                        <td><span class="badge bg-secondary">{{ membro.cargo }}</span></td>
+                        <td>
+                            {% if membro.ativo %}
+                                <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('membros.carteirinha', id=membro.id) }}" target="_blank" class="btn btn-sm btn-outline-dark" title="Carteirinha">
+                                    <i class="bi bi-person-badge"></i>
+                                </a>
+                                <a href="{{ url_for('membros.declaracao', id=membro.id) }}" class="btn btn-sm btn-outline-dark" title="Declaração">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                </a>
+                                <a href="{{ url_for('membros.editar', id=membro.id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form action="{{ url_for('membros.arquivar', id=membro.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Deseja ARQUIVAR este membro? Os dados serão preservados no histórico.');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Arquivar">
+                                        <i class="bi bi-archive"></i> 
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

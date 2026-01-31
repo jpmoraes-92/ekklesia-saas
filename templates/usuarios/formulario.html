@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="container" style="max-width: 500px;">
+    <h2 class="mb-4 text-center">Novo Usuário</h2>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <form action="{{ url_for('usuarios.novo') }}" method="POST">
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nome</label>
+                    <input type="text" class="form-control" name="nome" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">E-mail (Login)</label>
+                    <input type="email" class="form-control" name="email" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nível de Acesso</label>
+                    <select class="form-select" name="role">
+                        <option value="secretaria">Secretaria (Padrão)</option>
+                        <option value="financeiro">Financeiro</option>
+                        <option value="admin">Administrador (Total)</option>
+                    </select>
+                    <div class="form-text">
+                        <strong>Admin:</strong> Acesso total. 
+                        <strong>Secretaria:</strong> Membros e Docs.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Senha Inicial</label>
+                    <input type="password" class="form-control" name="senha" required>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Criar Usuário</button>
+                    <a href="{{ url_for('usuarios.lista') }}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

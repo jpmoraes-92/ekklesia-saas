@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Painel de Controle</h1>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total de Membros</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <span style="font-size: 2rem;">👥</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Entradas (Mês)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 0,00</div>
+                        </div>
+                        <div class="col-auto">
+                            <span style="font-size: 2rem;">💰</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Últimos Membros Cadastrados</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Cargo</th>
+                            <th>Data Cadastro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membro in recentes %}
+                        <tr>
+                            <td>{{ membro.nome }}</td>
+                            <td>{{ membro.cargo }}</td>
+                            <td>Ativo</td> </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">Nenhum membro cadastrado ainda.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

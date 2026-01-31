@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="container" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>⚙️ Configurações da Instituição</h2>
+    </div>
+    
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            Dados Institucionais (Usados em Documentos e Carteirinhas)
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('configuracoes.index') }}" method="POST" enctype="multipart/form-data">
+                
+                <div class="row mb-4 align-items-center">
+                    <div class="col-md-3 text-center">
+                        <div class="border rounded p-2 bg-light d-flex justify-content-center align-items-center" style="height: 120px;">
+                            <img src="{{ url_for('static', filename='logos/logo_' ~ igreja.id ~ '.png') }}" 
+                                 data-fallback="{{ url_for('static', filename='img/logo_igreja.jpg') }}"
+                                 onerror="this.onerror=null; this.src=this.dataset.fallback;"
+                                 class="img-fluid" style="max-height: 100px;">
+                        </div>
+                        <label class="btn btn-sm btn-outline-primary mt-2 w-100">
+                            Alterar Logo <i class="bi bi-upload"></i>
+                            <input type="file" name="logo" hidden accept="image/*">
+                        </label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nome da Instituição</label>
+                            <input type="text" class="form-control form-control-lg" name="nome" value="{{ igreja.nome }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">CNPJ</label>
+                            <input type="text" class="form-control" name="cnpj" value="{{ igreja.cnpj }}">
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5 class="mb-3 text-muted">Responsável Legal</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Nome do Responsável</label>
+                        <input type="text" class="form-control" name="responsavel" value="{{ igreja.responsavel }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Cargo</label>
+                        <input type="text" class="form-control" name="cargo_responsavel" value="{{ igreja.cargo_responsavel }}" required>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5 class="mb-3 text-muted">Localização</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Endereço Completo</label>
+                    <input type="text" class="form-control" name="endereco" value="{{ igreja.endereco }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Cidade - UF</label>
+                    <input type="text" class="form-control" name="cidade_uf" value="{{ igreja.cidade_uf }}" required>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save"></i> Salvar Configurações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

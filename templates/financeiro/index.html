@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 text-gray-800">Tesouraria</h2>
+        <a href="{{ url_for('financeiro.novo') }}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle"></i> Novo Lançamento
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-left-success shadow h-100 py-2 border-0 border-start border-5 border-success">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Entradas (Total)</div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">R$ {{ "%.2f"|format(entradas)|replace('.', ',') }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-arrow-up-circle-fill text-success fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-left-danger shadow h-100 py-2 border-0 border-start border-5 border-danger">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Saídas (Total)</div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">R$ {{ "%.2f"|format(saidas)|replace('.', ',') }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-arrow-down-circle-fill text-danger fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-left-primary shadow h-100 py-2 border-0 border-start border-5 border-primary">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Saldo Atual</div>
+                            <div class="h4 mb-0 font-weight-bold {% if saldo >= 0 %}text-primary{% else %}text-danger{% endif %}">
+                                R$ {{ "%.2f"|format(saldo)|replace('.', ',') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-wallet2 text-gray-300 fs-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Histórico de Transações</h6>
+            <button class="btn btn-sm btn-outline-secondary" disabled><i class="bi bi-printer"></i> Relatório PDF</button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Data</th>
+                            <th>Tipo</th>
+                            <th>Categoria</th>
+                            <th>Descrição / Membro</th>
+                            <th class="text-end pe-4">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in lancamentos %}
+                        <tr>
+                            <td class="ps-4">{{ item.data.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                {% if item.tipo == 'entrada' %}
+                                    <span class="badge bg-success-subtle text-success border border-success">Entrada</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger">Saída</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.categoria }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ item.descricao }}</div>
+                                {% if item.membro %}
+                                    <small class="text-muted"><i class="bi bi-person"></i> {{ item.membro.nome }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4 fw-bold {% if item.tipo == 'entrada' %}text-success{% else %}text-danger{% endif %}">
+                                {% if item.tipo == 'saida' %}-{% endif %}
+                                R$ {{ "%.2f"|format(item.valor)|replace('.', ',') }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">Nenhum lançamento encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
